@@ -58,7 +58,6 @@ pub enum AnInstruction<Dest> {
     Swap(Ord16),
 
     // Control flow
-    Nop,
     Skiz,
     Call(Dest),
     Return,
@@ -104,7 +103,6 @@ impl<Dest: Display> Display for AnInstruction<Dest> {
             Dup(arg) => write!(f, "dup{}", arg),
             Swap(arg) => write!(f, "swap{}", arg),
             // Control flow
-            Nop => write!(f, "nop"),
             Skiz => write!(f, "skiz"),
             Call(arg) => write!(f, "call {}", arg),
             Return => write!(f, "return"),
@@ -153,7 +151,6 @@ impl<Dest> AnInstruction<Dest> {
             Swap(_) => 9,
 
             // Control flow
-            Nop => 8,
             Skiz => 6,
             Call(_) => 13,
             Return => 12,
@@ -195,7 +192,7 @@ impl<Dest> AnInstruction<Dest> {
     pub fn is_op_stack_instruction(&self) -> bool {
         !matches!(
             self,
-            Nop | Call(_) | Return | Recurse | Halt | Hash | AssertVector
+            Call(_) | Return | Recurse | Halt | Hash | AssertVector
         )
     }
 
@@ -230,7 +227,6 @@ impl<Dest> AnInstruction<Dest> {
             Divine(x) => Divine(*x),
             Dup(x) => Dup(*x),
             Swap(x) => Swap(*x),
-            Nop => Nop,
             Skiz => Skiz,
             Call(label) => Call(f(label)),
             Return => Return,
@@ -281,7 +277,6 @@ impl TryFrom<u32> for Instruction {
             4 => Ok(Divine(Default::default())),
             5 => Ok(Dup(ST0)),
             9 => Ok(Swap(ST0)),
-            8 => Ok(Nop),
             6 => Ok(Skiz),
             13 => Ok(Call(Default::default())),
             12 => Ok(Return),
@@ -436,6 +431,7 @@ fn parse_token(
         "dup13" => vec![Dup(ST13)],
         "dup14" => vec![Dup(ST14)],
         "dup15" => vec![Dup(ST15)],
+        "swap0" => vec![Swap(ST0)],
         "swap1" => vec![Swap(ST1)],
         "swap2" => vec![Swap(ST2)],
         "swap3" => vec![Swap(ST3)],
@@ -453,7 +449,6 @@ fn parse_token(
         "swap15" => vec![Swap(ST15)],
 
         // Control flow
-        "nop" => vec![Nop],
         "skiz" => vec![Skiz],
         "call" => vec![Call(parse_label(tokens)?)],
         "return" => vec![Return],
@@ -483,6 +478,7 @@ fn parse_token(
         "xbmul" => vec![XbMul],
 
         // Pseudo-instructions
+        "nop" => vec![Swap(ST0)],
         "neg" => vec![Push(BFieldElement::one().neg()), Mul],
         "sub" => vec![Swap(ST1), Push(BFieldElement::one().neg()), Mul, Add],
 
@@ -712,7 +708,6 @@ pub fn all_instructions_without_args() -> Vec<Instruction> {
         Divine(None),
         Dup(Default::default()),
         Swap(Default::default()),
-        Nop,
         Skiz,
         Call(Default::default()),
         Return,
@@ -763,6 +758,7 @@ pub fn all_labelled_instructions_with_args() -> Vec<LabelledInstruction> {
         Dup(ST13),
         Dup(ST14),
         Dup(ST15),
+        Swap(ST0),
         Swap(ST1),
         Swap(ST2),
         Swap(ST3),
@@ -778,7 +774,6 @@ pub fn all_labelled_instructions_with_args() -> Vec<LabelledInstruction> {
         Swap(ST13),
         Swap(ST14),
         Swap(ST15),
-        Nop,
         Skiz,
         Call("foo".to_string()),
         Return,
@@ -1203,9 +1198,9 @@ pub mod sample_programs {
         divine divine_quotient
 
         dup0 dup1 dup2 dup3 dup4 dup5 dup6 dup7 dup8 dup9 dup10 dup11 dup12 dup13 dup14 dup15
-        swap1 swap2 swap3 swap4 swap5 swap6 swap7 swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15
+        swap0 swap1 swap2 swap3 swap4 swap5 swap6 swap7
+        swap8 swap9 swap10 swap11 swap12 swap13 swap14 swap15
 
-        nop
         skiz
         call foo
 
@@ -1237,6 +1232,7 @@ pub mod sample_programs {
             "dup13",
             "dup14",
             "dup15",
+            "swap0",
             "swap1",
             "swap2",
             "swap3",
@@ -1252,7 +1248,6 @@ pub mod sample_programs {
             "swap13",
             "swap14",
             "swap15",
-            "nop",
             "skiz",
             "call foo",
             "return",

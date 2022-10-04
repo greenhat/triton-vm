@@ -650,7 +650,6 @@ impl ExtProcessorTable {
             (Divine(Default::default()), factory.instruction_divine()),
             (Dup(Default::default()), factory.instruction_dup()),
             (Swap(Default::default()), factory.instruction_swap()),
-            (Nop, factory.instruction_nop()),
             (Skiz, factory.instruction_skiz()),
             (Call(Default::default()), factory.instruction_call()),
             (Return, factory.instruction_return()),
@@ -989,7 +988,7 @@ impl RowPairConstraints {
 
     pub fn instruction_swap(&self) -> Vec<MPolynomial<XFieldElement>> {
         vec![
-            self.indicator_polynomial(0),
+            self.indicator_polynomial(0) * (self.st0_next() - self.st0()),
             self.indicator_polynomial(1) * (self.st1_next() - self.st0()),
             self.indicator_polynomial(2) * (self.st2_next() - self.st0()),
             self.indicator_polynomial(3) * (self.st3_next() - self.st0()),
@@ -1039,11 +1038,6 @@ impl RowPairConstraints {
             self.osp_next() - self.osp(),
             (self.one() - self.indicator_polynomial(1)) * (self.ramv_next() - self.ramv()),
         ]
-    }
-
-    pub fn instruction_nop(&self) -> Vec<MPolynomial<XFieldElement>> {
-        // no further constraints
-        vec![]
     }
 
     pub fn instruction_skiz(&self) -> Vec<MPolynomial<XFieldElement>> {
@@ -2249,7 +2243,6 @@ mod constraint_polynomial_tests {
             Divine(_) => tc.instruction_divine(),
             Dup(_) => tc.instruction_dup(),
             Swap(_) => tc.instruction_swap(),
-            Nop => tc.instruction_nop(),
             Skiz => tc.instruction_skiz(),
             Call(_) => tc.instruction_call(),
             Return => tc.instruction_return(),

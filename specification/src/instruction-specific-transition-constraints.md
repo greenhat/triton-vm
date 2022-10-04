@@ -77,7 +77,7 @@ For their definition, please refer to the corresponding section.
 
 ### Description
 
-1. Argument `i` is not 0.
+1. If `i` is 0, then `st0` does not change.
 1. If `i` is 1, then `st0` is moved into `st1`.
 1. If `i` is 2, then `st0` is moved into `st2`.
 1. If `i` is 3, then `st0` is moved into `st3`.
@@ -129,7 +129,7 @@ For their definition, please refer to the corresponding section.
 
 ### Polynomials
 
-1. `ind_0(hv3, hv2, hv1, hv0)`
+1. `ind_0(hv3, hv2, hv1, hv0)·(st0' - st0)`
 1. `ind_1(hv3, hv2, hv1, hv0)·(st1' - st0)`
 1. `ind_2(hv3, hv2, hv1, hv0)·(st2' - st0)`
 1. `ind_3(hv3, hv2, hv1, hv0)·(st3' - st0)`
@@ -187,10 +187,6 @@ For `swap` + `i`, helper variables contain the binary decomposition of `i`:
 1. `hv1 = (i >> 1) % 2`
 1. `hv2 = (i >> 2) % 2`
 1. `hv3 = (i >> 3) % 2`
-
-## Instruction `nop`
-
-This instruction has no additional transition constraints.
 
 ## Instruction `skiz`
 

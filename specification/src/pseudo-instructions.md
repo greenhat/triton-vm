@@ -7,6 +7,7 @@ The following list is a comprehensive overview, including their expansion.
 
 | Instruction    | old OpStack | new OpStack   | Description                                                                                                                                                           |
 |:---------------|:------------|:--------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `nop`          | `_`         | `_`           | Does nothing.                                                                                                                                                         |
 | `neg`          | `_ a`       | `_ -a`        | Replaces the top of the stack with the field element corresponding to its additively inverse element.                                                                 |
 | `sub`          | `_ b a`     | `_ a-b`       | Subtracts the stack's one-from top element from the stack's topmost element.                                                                                          |
 | `is_u32`       | `_ a`       | `_ a`         | Crashes the VM if `a` cannot be represented as an unsigned 32-bit integer.                                                                                            |
@@ -18,6 +19,15 @@ The following list is a comprehensive overview, including their expansion.
 | `reverse`      | `_ a`       | `_ b`         | Reverses the bit expansion of the top stack element. Crashes the VM if `a` is not a 32-bit integer.                                                                   |
 | `div`          | `_ d n`     | `_ q r`       | Computes division with remainder of the top two stack elements, assuming both arguments are unsigned 32-bit integers. The result satisfies `n == d·q + r`and `r < d`. |
 
+## Pseudo instruction `nop`
+
+Program length: 2.
+
+Execution cycle count: 1.
+
+```
+swap 0
+```
 
 ## Pseudo instruction `neg`
 

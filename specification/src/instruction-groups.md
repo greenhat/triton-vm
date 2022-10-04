@@ -20,7 +20,6 @@ A summary of all instructions and which groups they are part of is given in the 
 | `divine`         |            |                 | x        |          | x            |              |                |        |         |
 | `dup` + `i`      | x          | x               |          | x        | x            |              |                |        |         |
 | `swap` + `i`     | x          | x               |          | x        |              |              |                |        |         |
-| `nop`            |            |                 | x        |          |              | x            |                |        |         |
 | `skiz`           |            |                 |          |          |              |              | x              |        |         |
 | `call` + `d`     | x          |                 |          |          |              | x            |                |        |         |
 | `return`         |            |                 |          |          |              | x            |                |        |         |
