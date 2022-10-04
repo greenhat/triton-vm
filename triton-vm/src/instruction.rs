@@ -4,7 +4,7 @@ use std::fmt::Display;
 use std::ops::Neg;
 use std::str::SplitWhitespace;
 
-use num_traits::One;
+use num_traits::{One, Zero};
 use strum::EnumCount;
 use strum_macros::{Display as DisplayMacro, EnumCount as EnumCountMacro};
 use twenty_first::shared_math::b_field_element::BFieldElement;
@@ -477,24 +477,36 @@ fn parse_token(
         "xinvert" => vec![XInvert],
         "xbmul" => vec![XbMul],
 
+        // Read/write
+        "read_io" => vec![ReadIo],
+        "write_io" => vec![WriteIo],
+
         // Pseudo-instructions
         "nop" => vec![Swap(ST0)],
-        "neg" => vec![Push(BFieldElement::one().neg()), Mul],
+        "neg" => vec![Push(-BFieldElement::one()), Mul],
         "sub" => vec![Swap(ST1), Push(BFieldElement::one().neg()), Mul, Add],
+
+        "inc" => vec![Push(BFieldElement::one()), Add],
+        "dec" => vec![Push(-BFieldElement::one()), Add],
+
+        "if" => vec![Skiz],
+        "skinz" => vec![Push(BFieldElement::zero()), Eq, Skiz],
+        "neq" => vec![Eq, Push(BFieldElement::zero()), Eq],
 
         "lte" => pseudo_instruction_lte(),
         "lt" => pseudo_instruction_lt(),
+        "gte" => pseudo_instruction_gte(),
+        "gt" => pseudo_instruction_gt(),
         "and" => pseudo_instruction_and(),
         "xor" => pseudo_instruction_xor(),
+        "lnot" => pseudo_instruction_lnot(),
         "reverse" => pseudo_instruction_reverse(),
         "div" => pseudo_instruction_div(),
 
         "is_u32" => pseudo_instruction_is_u32(),
         "split_assert" => pseudo_instruction_split_assert(),
 
-        // Read/write
-        "read_io" => vec![ReadIo],
-        "write_io" => vec![WriteIo],
+        "p=np" => vec![Divine(Default::default())],
 
         _ => return Err(Box::new(UnknownInstruction(token.to_string()))),
     };
@@ -548,6 +560,14 @@ fn pseudo_instruction_lte() -> Vec<AnInstruction<String>> {
 
 fn pseudo_instruction_lt() -> Vec<AnInstruction<String>> {
     vec![vec![Push(1_u64.into()), Add], pseudo_instruction_lte()].concat()
+}
+
+fn pseudo_instruction_gte() -> Vec<AnInstruction<String>> {
+    vec![pseudo_instruction_lt(), vec![Push(0_u64.into()), Eq]].concat()
+}
+
+fn pseudo_instruction_gt() -> Vec<AnInstruction<String>> {
+    vec![pseudo_instruction_lte(), vec![Push(0_u64.into()), Eq]].concat()
 }
 
 fn pseudo_instruction_div() -> Vec<AnInstruction<String>> {
@@ -652,6 +672,24 @@ fn pseudo_instruction_xor() -> Vec<AnInstruction<String>> {
         vec![Dup(ST1), Dup(ST1)],
         pseudo_instruction_and(),
         vec![Push(-BFieldElement::new(2)), Mul, Add, Add],
+    ]
+    .concat()
+}
+
+fn pseudo_instruction_lnot() -> Vec<AnInstruction<String>> {
+    vec![
+        pseudo_instruction_is_u32(),
+        vec![
+            // _ a
+            Push(-BFieldElement::one()),
+            // _ a -1
+            Mul,
+            // _ -a
+            Push(BFieldElement::new(0xffff_ffff_u64)),
+            // _ -a 0xf…f
+            Add,
+            // _ 0xf…f-a
+        ],
     ]
     .concat()
 }

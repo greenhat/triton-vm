@@ -849,6 +849,47 @@ pub mod triton_vm_tests {
         SourceCodeAndInput::without_input(&source_code)
     }
 
+    pub fn test_program_for_gt() -> SourceCodeAndInput {
+        SourceCodeAndInput::without_input("push 3 push 5 gt assert halt")
+    }
+
+    pub fn property_based_test_program_for_gt() -> SourceCodeAndInput {
+        let mut rng = ThreadRng::default();
+        let st1 = rng.next_u32();
+        let st0 = rng.next_u32();
+        let result = if st0 > st1 {
+            1_u64.into()
+        } else {
+            0_u64.into()
+        };
+
+        let source_code = format!(
+            "push {} push {} gt read_io eq assert halt",
+            st1.to_string(),
+            st0.to_string()
+        );
+
+        SourceCodeAndInput {
+            source_code,
+            input: vec![result],
+            secret_input: vec![],
+        }
+    }
+
+    pub fn property_based_test_program_for_lnot() -> SourceCodeAndInput {
+        let mut rng = ThreadRng::default();
+        let st0 = rng.next_u32();
+        let result = !st0;
+
+        let source_code = format!("push {} lnot read_io eq assert halt", st0.to_string());
+
+        SourceCodeAndInput {
+            source_code,
+            input: vec![result.into()],
+            secret_input: vec![],
+        }
+    }
+
     #[test]
     #[should_panic(expected = "st0 must be 1.")]
     pub fn negative_property_is_u32_test() {
@@ -909,6 +950,16 @@ pub mod triton_vm_tests {
         }
     }
 
+    pub fn test_program_for_inc_dec() -> SourceCodeAndInput {
+        SourceCodeAndInput::without_input(
+            "push 5 inc push 6 eq assert \
+             push 6 dec push 5 eq assert \
+             push 0 inc assert \
+             push 0 dec push -1 eq assert \
+             halt",
+        )
+    }
+
     pub fn small_tasm_test_programs() -> Vec<SourceCodeAndInput> {
         vec![
             test_program_for_push_pop_dup_swap_nop(),
@@ -929,6 +980,7 @@ pub mod triton_vm_tests {
             test_program_for_xinvert(),
             test_program_for_xbmul(),
             test_program_for_read_io_write_io(),
+            test_program_for_inc_dec(),
         ]
     }
 
@@ -945,6 +997,8 @@ pub mod triton_vm_tests {
             property_based_test_program_for_lte(),
             property_based_test_program_for_div(),
             property_based_test_program_for_is_u32(),
+            property_based_test_program_for_gt(),
+            property_based_test_program_for_lnot(),
         ]
     }
 
@@ -959,6 +1013,7 @@ pub mod triton_vm_tests {
             test_program_for_reverse(),
             test_program_for_lte(),
             test_program_for_div(),
+            test_program_for_gt(),
             test_program_for_split_assert(),
         ]
     }
