@@ -46,13 +46,16 @@
 
 % declared as commands purely for reasons of latex source code formatting
 \newcommand{\hintdivinesib}{
-    \textcolor{hint}{\texttt{st12 \% 2 = 0 $\Rightarrow$ left node}}
+    \textcolor{hint}{\texttt{st10 \% 2 = 0 $\Rightarrow$ left node}}
 }
 \newcommand{\hintsplit}{
     \textcolor{hint}{\texttt{hi $\rightarrow$ st0'}}
 }
+\newcommand{\hintsub}{
+\textcolor{hint}{\texttt{st0}${}-{}$\texttt{st1}}
+}
 \newcommand{\hintlt}{
-    \textcolor{hint}{\texttt{st0} $\stackrel{\texttt{?}}{\texttt{<}}$ \texttt{st1}}
+\textcolor{hint}{\texttt{st0} $\stackrel{\texttt{?}}{\texttt{<}}$ \texttt{st1}}
 }
 \newcommand{\hintdiv}{
     \textcolor{hint}{\nicefrac{\texttt{st0}}{\texttt{st1}}}
@@ -156,19 +159,20 @@
 \vfill%
 \begin{minipage}{0.3\textwidth}
     \rowcolors{2}{row2}{row1}
-    \begin{tabular}{rl}
+    \begin{tabular}{rlr}
         \toprule
-        \#clk & instruction            \\ \midrule
-            2 & \texttt{neg}           \\
-            4 & \texttt{sub}           \\
-           68 & \texttt{is\_u32}       \\
-          139 & \texttt{split\_assert} \\
-          146 & \texttt{lte}           \\
-          148 & \texttt{lt}            \\
-          295 & \texttt{and}           \\
-          301 & \texttt{xor}           \\
-          195 & \texttt{reverse}       \\
-          164 & \texttt{div}           \\ \bottomrule
+        \#clk & \multicolumn{2}{l}{instruction}            \\ \midrule
+            1 & \multicolumn{2}{l}{\texttt{nop}}           \\
+            2 & \multicolumn{2}{l}{\texttt{neg}}           \\
+            4 & \texttt{sub} &                    \hintsub \\
+           68 & \multicolumn{2}{l}{\texttt{is\_u32}}       \\
+          139 & \multicolumn{2}{l}{\texttt{split\_assert}} \\
+          146 & \multicolumn{2}{l}{\texttt{lte}}           \\
+          148 & \texttt{lt}  &                     \hintlt \\
+          295 & \multicolumn{2}{l}{\texttt{and}}           \\
+          301 & \multicolumn{2}{l}{\texttt{xor}}           \\
+          195 & \multicolumn{2}{l}{\texttt{reverse}}       \\
+          232 & \texttt{div} &                    \hintdiv \\ \bottomrule
     \end{tabular}
 \end{minipage}
 
